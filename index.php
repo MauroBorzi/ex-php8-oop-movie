@@ -1,74 +1,73 @@
 <?php
-class Genre
-{
-  public $genere;
-  public $sottogenere;
+require_once __DIR__ . '/db.php';
+?>
+<!DOCTYPE html>
+<html lang="it">
 
-  function __construct($_genere, $_sottogenere)
-  {
-    $this->genere = $_genere;
-    $this->sottogenere = $_sottogenere;
-  }
-}
-
-trait RatingTrait
-{
-  public $rating;
-
-  public function setRating($valore)
-  {
-    if ($valore < 0 || $valore > 10) {
-      throw new Exception("Il voto deve essere compreso tra 0 e 10");
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista Film</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #121212;
+      color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
-    $this->rating = $valore;
-  }
 
-  public function getRating()
-  {
-    return $this->rating ?? "Nessun voto assegnato";
-  }
-}
-
-class Movie
-{
-  use RatingTrait;
-
-  public $titolo;
-  public $autore;
-  public $anno;
-  public $generi = [];
-
-  function __construct($_titolo, $_autore, $_anno, array $_generi)
-  {
-    $this->titolo = $_titolo;
-    $this->autore = $_autore;
-    $this->anno = $_anno;
-    $this->generi = $_generi;
-  }
-
-  public function getTitle()
-  {
-    return $this->titolo;
-  }
-
-  public function getGeneri()
-  {
-    $nomiGeneri = [];
-    foreach ($this->generi as $genere) {
-      $nomiGeneri[] = "{$genere->genere} ({$genere->sottogenere})";
+    main {
+      flex-grow: 1;
     }
-    return implode(", ", $nomiGeneri);
-  }
-}
 
-$genre1 = new Genre("Azione", "Sparatorie");
-$genre2 = new Genre("Thriller", "Vendetta");
+    .card {
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
 
-$movie1 = new Movie("John Wick", "Chad Stahelski", 2014, [$genre1, $genre2]);
-$movie2 = new Movie("John Wick 2", "Chad Stahelski", 2017, [$genre1]);
+    .card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 20px rgba(255, 193, 7, 0.3);
+    }
 
-$movie1->setRating(9);
-$movie2->setRating(8.5);
+    footer {
+      border-top: 2px solid #ffc107;
+    }
+  </style>
+</head>
 
-echo "<strong>{$movie1->getTitle()}</strong> - Generi: {$movie1->getGeneri()} - Rating: {$movie1->getRating()}<br>";
-echo "<strong>{$movie2->getTitle()}</strong> - Generi: {$movie2->getGeneri()} - Rating: {$movie2->getRating()}<br>";
+<body class="d-flex flex-column min-vh-100 bg-dark text-light">
+
+  <header class="bg-black py-4 mb-4">
+    <div class="container text-center">
+      <h1 class="display-5 fw-bold text-warning">🎬 Lista dei Film</h1>
+    </div>
+  </header>
+
+  <main class="container flex-grow-1">
+    <div class="row g-4">
+      <?php foreach ($movies as $movie) : ?>
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-lg border-warning border-2 bg-secondary text-light">
+            <div class="card-body">
+              <h3 class="card-title text-warning"><?= $movie->getTitle(); ?></h3>
+              <p class="card-text mb-1"><strong>Autore:</strong> <?= $movie->autore; ?></p>
+              <p class="card-text mb-1"><strong>Anno:</strong> <?= $movie->anno; ?></p>
+              <p class="card-text mb-1"><strong>Generi:</strong> <?= $movie->getGeneri(); ?></p>
+              <p class="card-text mb-0"><strong>Rating:</strong> ⭐ <?= $movie->getRating(); ?></p>
+            </div>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+  </main>
+
+  <footer class="bg-black text-center py-3 mt-auto border-top border-warning">
+    <p class="mb-0">© <?= date('Y'); ?> - Movie Database</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
